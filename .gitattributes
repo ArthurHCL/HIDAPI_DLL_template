@@ -1,1 +1,1 @@
-*.cs linguist-language=C#
+HIDAPI_DLL_usage/*.cs linguist-language=C#
