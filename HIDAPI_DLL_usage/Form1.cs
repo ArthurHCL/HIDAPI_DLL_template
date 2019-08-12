@@ -25,6 +25,8 @@ namespace HIDAPI_DLL_usage
         private volatile bool is_USB_device_connected = false;
         private volatile IntPtr target_hid_device = IntPtr.Zero;
 
+        private readonly Thread thread_main = Thread.CurrentThread;
+
         public Form1()
         {
             InitializeComponent();
@@ -83,12 +85,26 @@ namespace HIDAPI_DLL_usage
                 int read_hid_data_amount = UserHIDAPI.HID_Read_Timeout(target_hid_device, HID_read_buffer, HID_read_buffer.Length, USB_COMMUNICATION_TIMEOUT_IN_MILLISECONDS);
                 if (0 > read_hid_data_amount)
                 {
+                    if (!thread_main.IsAlive)
+                    {
+                        is_thread_close_needed = true;
+
+                        goto exit_3;
+                    }
+
                     ret = -5;
 
                     goto exit_3;
                 }
                 else if (0 == read_hid_data_amount)
                 {
+                    if (!thread_main.IsAlive)
+                    {
+                        is_thread_close_needed = true;
+
+                        goto exit_3;
+                    }
+
                     continue;
                 }
 
